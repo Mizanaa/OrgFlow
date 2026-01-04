@@ -9,6 +9,7 @@
         :root {
             --ssc-navy: #1a1c2c; --ssc-gold: #fbb03b; --ssc-red: #d4145a;
             --ssc-green: #22b573; --bg-light: #f4f7f6; --border-color: #cbd5e1;
+            --ssc-purple: #6366f1;
         }
 
         body { background: var(--bg-light); margin: 0; display: flex; font-family: 'Inter', sans-serif; color: #1e293b; }
@@ -22,7 +23,6 @@
         main { margin-left: 260px; padding: 2rem; width: calc(100% - 260px); box-sizing: border-box; }
         .page { display: none; } .page.active { display: block; }
 
-        /* Year Category Tabs */
         .year-tabs { display: flex; gap: 5px; background: white; padding: 5px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
         .year-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; border-radius: 8px; font-weight: 600; color: #64748b; font-size: 0.9rem; }
         .year-btn.active { background: var(--ssc-navy); color: white; }
@@ -30,12 +30,13 @@
         .panel { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
         .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         
-        input[type="text"] { padding: 12px 15px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; outline: none; }
+        input[type="text"], input[type="number"] { padding: 12px 15px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; outline: none; }
+        input:focus { border-color: var(--ssc-gold); }
+
         .search-wrapper { position: relative; margin-bottom: 1.5rem; max-width: 400px; display: flex; align-items: center; }
         .search-bar { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1.5px solid var(--border-color); outline: none; box-sizing: border-box; font-size: 0.95rem; }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 1.1rem; }
 
-        /* Table Components */
         .table-container { overflow: auto; max-height: 60vh; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
         table { width: max-content; border-collapse: separate; border-spacing: 0; min-width: 100%; }
         thead th { position: sticky; top: 0; z-index: 40; background: #f8fafc; padding: 15px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border: 1px solid #edf2f7; min-width: 180px; }
@@ -43,7 +44,6 @@
         thead th.name-col { z-index: 50; top: 0; }
         td { padding: 10px; border: 1px solid #edf2f7; font-size: 0.85rem; text-align: center; }
 
-        /* Summary Footer Style */
         tfoot td { background: #f1f5f9; font-weight: 700; font-size: 0.8rem; color: var(--ssc-navy); border-top: 2px solid var(--border-color); position: sticky; bottom: 0; z-index: 30; }
 
         .btn-ssc { background: var(--ssc-navy); color: white; padding: 11px 18px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
@@ -57,6 +57,14 @@
         .status-Excused { background: #e0f2fe; color: #075985; }
         .status-Fulfilled { background: #e0e7ff; color: #3730a3; }
         .del-col { position: absolute; top: 2px; right: 2px; cursor: pointer; color: #cbd5e1; font-size: 12px; }
+
+        /* Auditor Cards */
+        .audit-card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .audit-card h3 { margin: 0 0 15px 0; color: var(--ssc-navy); border-bottom: 2px solid var(--ssc-gold); display: inline-block; cursor: pointer; }
+        .audit-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .audit-total-row { text-align: right; font-weight: 700; font-size: 1.1rem; color: var(--ssc-navy); margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+        .btn-add-item { background: var(--ssc-green); color: white; padding: 8px 15px; border-radius: 6px; border: none; font-size: 0.85rem; cursor: pointer; margin-top: 10px; }
+        .btn-del-item { background: none; border: none; color: var(--ssc-red); cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -65,199 +73,170 @@
     <h1>SAN SEBASTIAN COLLEGE<br>RECOLETOS DE CAVITE<br><small style="color:white">BS PSYCHOLOGY</small></h1>
     <button id="nav-att" class="nav-item active" onclick="showMainPage('attendance')">Attendance Tracking</button>
     <button id="nav-fin" class="nav-item" onclick="showMainPage('finance')">Event Penalties</button>
+    <button id="nav-aud" class="nav-item" onclick="showMainPage('audit')">Auditor's Workspace</button>
 </nav>
 
 <main>
-    <div class="year-tabs">
+    <div id="yearTabContainer" class="year-tabs">
         <button class="year-btn active" onclick="filterYear('1st Year', this)">1st Year</button>
         <button class="year-btn" onclick="filterYear('2nd Year', this)">2nd Year</button>
         <button class="year-btn" onclick="filterYear('3rd Year', this)">3rd Year</button>
         <button class="year-btn" onclick="filterYear('4th Year', this)">4th Year</button>
     </div>
 
-    <div class="search-wrapper">
-        <input type="text" id="globalSearch" class="search-bar" placeholder="Search in this year level..." onkeyup="renderAll()">
-    </div>
-
-    <div class="panel">
-        <div class="controls">
-            <input type="text" id="newName" placeholder="Student Name">
-            <button class="btn-ssc" onclick="addStudent()">Add Student</button>
-            <div style="border-left: 1px solid #ddd; height: 30px; margin: 0 5px;"></div>
-            <input type="text" id="newColTitle" placeholder="Event Name">
-            <button id="addColBtn" class="btn-ssc" style="background: var(--ssc-gold); color: var(--ssc-navy);" onclick="addColumn()">Add Attendance Column</button>
-            <button class="btn-ssc" style="background:#6366f1" onclick="document.getElementById('csvIn').click()">📁 Import CSV</button>
-            <input type="file" id="csvIn" style="display:none" accept=".csv" onchange="handleCSV(event)">
+    <div id="standardControls">
+        <div class="search-wrapper"><span class="search-icon">🔍</span><input type="text" id="globalSearch" class="search-bar" placeholder="Search students..." onkeyup="renderAll()"></div>
+        <div class="panel">
+            <div class="controls">
+                <input type="text" id="newName" placeholder="Student Name">
+                <button class="btn-ssc" onclick="addStudent()">Add Student</button>
+                <div style="border-left: 1px solid #ddd; height: 30px; margin: 0 5px;"></div>
+                <input type="text" id="newColTitle" placeholder="Column Name">
+                <button id="addColBtn" class="btn-ssc" style="background: var(--ssc-gold); color: var(--ssc-navy);" onclick="addColumn()">Add Column</button>
+                <button class="btn-ssc" style="background:var(--ssc-purple)" onclick="document.getElementById('csvIn').click()">📁 Import CSV</button>
+                <input type="file" id="csvIn" style="display:none" accept=".csv" onchange="handleCSV(event)">
+            </div>
         </div>
     </div>
 
-    <div id="attendance" class="page active">
-        <div class="table-container">
-            <table>
-                <thead id="attHead"></thead>
-                <tbody id="attBody"></tbody>
-                <tfoot id="attFoot"></tfoot>
-            </table>
+    <div id="attendance" class="page active"><div class="table-container"><table><thead id="attHead"></thead><tbody id="attBody"></tbody><tfoot id="attFoot"></tfoot></table></div></div>
+    <div id="finance" class="page"><div class="table-container"><table><thead id="finHead"></thead><tbody id="finBody"></tbody><tfoot id="finFoot"></tfoot></table></div></div>
+    
+    <div id="audit" class="page">
+        <div class="panel">
+            <div class="controls">
+                <input type="text" id="auditEventInput" placeholder="New Event Name (e.g. Christmas Party)">
+                <button class="btn-ssc" onclick="addAuditEvent()">+ Create Event Log</button>
+            </div>
         </div>
-    </div>
-
-    <div id="finance" class="page">
-        <div class="table-container">
-            <table>
-                <thead id="finHead"></thead>
-                <tbody id="finBody"></tbody>
-                <tfoot id="finFoot"></tfoot>
-            </table>
-        </div>
+        <div id="auditLogContainer"></div>
     </div>
 </main>
 
 <script>
     let attCols = JSON.parse(localStorage.getItem('ssc_att_cols')) || ["Institutional Acts", "Organization Acts"];
     let finCols = JSON.parse(localStorage.getItem('ssc_fin_cols')) || ["Org Fee 2025"];
-    let students = JSON.parse(localStorage.getItem('ssc_studs_v4')) || [];
-    let currentMainPage = 'attendance';
-    let currentYearFilter = '1st Year';
-
-    function filterYear(year, btn) {
-        currentYearFilter = year;
-        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderAll();
-    }
+    let students = JSON.parse(localStorage.getItem('ssc_studs_v6')) || [];
+    let auditLogs = JSON.parse(localStorage.getItem('ssc_audit_logs')) || [];
+    let currentMainPage = 'attendance', currentYearFilter = '1st Year';
 
     function showMainPage(id) {
         currentMainPage = id;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById(id === 'attendance' ? 'nav-att' : 'nav-fin').classList.add('active');
-        document.getElementById('addColBtn').innerText = id === 'attendance' ? 'Add Attendance Column' : 'Add Penalty Column';
-        renderAll();
+        document.getElementById('nav-' + id.substring(0,3)).classList.add('active');
+        
+        document.getElementById('yearTabContainer').style.display = id === 'audit' ? 'none' : 'flex';
+        document.getElementById('standardControls').style.display = id === 'audit' ? 'none' : 'block';
+
+        if(id === 'audit') renderAuditWorkspace(); else renderAll();
     }
 
     function renderAll() {
         const query = document.getElementById('globalSearch').value.toLowerCase();
-        const filteredStudents = students.filter(s => s.year === currentYearFilter && s.name.toLowerCase().includes(query));
+        const filtered = students.filter(s => s.year === currentYearFilter && s.name.toLowerCase().includes(query));
 
-        // --- ATTENDANCE RENDER ---
+        // Attendance
         const attHead = document.getElementById('attHead');
-        attHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${attCols.length}">Attendance Status</th><th rowspan="2">Action</th></tr><tr>` + 
+        attHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${attCols.length}">Attendance</th><th rowspan="2">Action</th></tr><tr>` + 
             attCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'att')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'att')">✖</span></th>`).join('') + `</tr>`;
-        
-        const attBody = document.getElementById('attBody');
-        attBody.innerHTML = '';
-        
-        // Tracking counts for summary
+        const attBody = document.getElementById('attBody'); attBody.innerHTML = '';
         let attStats = attCols.reduce((acc, col) => { acc[col] = 0; return acc; }, {});
 
-        filteredStudents.forEach((s, sIdx) => {
-            const actualIdx = students.indexOf(s);
-            let attRows = `<td class="name-col">${s.name}</td>`;
+        filtered.forEach(s => {
+            const idx = students.indexOf(s);
+            let row = `<td class="name-col">${s.name}</td>`;
             attCols.forEach(col => {
                 let val = s.attendance?.[col] || "Incomplete";
                 if(val === "Complete" || val === "Fulfilled") attStats[col]++;
-                attRows += `<td><select class="status-${val}" onchange="updateVal(${actualIdx}, '${col}', this.value, 'att')">
+                row += `<td><select class="status-${val}" onchange="updateVal(${idx}, '${col}', this.value, 'attendance')">
                     ${["Incomplete", "Complete", "Excused", "Fulfilled"].map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
                 </select></td>`;
             });
-            attRows += `<td><button onclick="deleteStud(${actualIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
-            attBody.innerHTML += `<tr>${attRows}</tr>`;
+            row += `<td><button onclick="deleteStud(${idx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            attBody.innerHTML += `<tr>${row}</tr>`;
         });
+        document.getElementById('attFoot').innerHTML = `<tr><td class="name-col">Total: ${filtered.length}</td>` + attCols.map(c => `<td>${attStats[c]} Cleared</td>`).join('') + `<td></td></tr>`;
 
-        // Attendance Footer
-        const attFoot = document.getElementById('attFoot');
-        attFoot.innerHTML = `<tr><td class="name-col">Total: ${filteredStudents.length} Students</td>` + 
-            attCols.map(col => `<td>${attStats[col]} Cleared</td>`).join('') + `<td></td></tr>`;
-
-        // --- FINANCE RENDER ---
+        // Finance
         const finHead = document.getElementById('finHead');
-        finHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${finCols.length}">Penalty Status</th><th rowspan="2">Action</th></tr><tr>` + 
+        finHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${finCols.length}">Penalties</th><th rowspan="2">Action</th></tr><tr>` + 
             finCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'fin')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'fin')">✖</span></th>`).join('') + `</tr>`;
-
-        const finBody = document.getElementById('finBody');
-        finBody.innerHTML = '';
+        const finBody = document.getElementById('finBody'); finBody.innerHTML = '';
         let finStats = finCols.reduce((acc, col) => { acc[col] = 0; return acc; }, {});
 
-        filteredStudents.forEach((s) => {
-            const actualIdx = students.indexOf(s);
-            let finRows = `<td class="name-col">${s.name}</td>`;
+        filtered.forEach(s => {
+            const idx = students.indexOf(s);
+            let row = `<td class="name-col">${s.name}</td>`;
             finCols.forEach(col => {
-                let isPaid = s.payments?.[col] || false;
-                if(isPaid) finStats[col]++;
-                finRows += `<td><button class="pay-btn ${isPaid?'pay-paid':'pay-unpaid'}" onclick="togglePay(${actualIdx}, '${col}')">${isPaid?'PAID':'UNPAID'}</button></td>`;
+                let paid = s.payments?.[col] || false;
+                if(paid) finStats[col]++;
+                row += `<td><button class="pay-btn ${paid?'pay-paid':'pay-unpaid'}" onclick="togglePay(${idx}, '${col}')">${paid?'PAID':'UNPAID'}</button></td>`;
             });
-            finRows += `<td><button onclick="deleteStud(${actualIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
-            finBody.innerHTML += `<tr>${finRows}</tr>`;
+            row += `<td><button onclick="deleteStud(${idx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            finBody.innerHTML += `<tr>${row}</tr>`;
         });
-
-        const finFoot = document.getElementById('finFoot');
-        finFoot.innerHTML = `<tr><td class="name-col">Total: ${filteredStudents.length} Students</td>` + 
-            finCols.map(col => `<td>${finStats[col]} Paid</td>`).join('') + `<td></td></tr>`;
-
+        document.getElementById('finFoot').innerHTML = `<tr><td class="name-col">Total: ${filtered.length}</td>` + finCols.map(c => `<td>${finStats[c]} Paid</td>`).join('') + `<td></td></tr>`;
         save();
     }
 
-    function addStudent() {
-        const input = document.getElementById('newName');
+    // AUDITOR WORKSPACE FUNCTIONS
+    function addAuditEvent() {
+        const input = document.getElementById('auditEventInput');
         if(input.value.trim()) {
-            students.push({name: input.value.trim(), year: currentYearFilter, attendance: {}, payments: {}});
-            students.sort((a,b) => a.name.localeCompare(b.name));
+            auditLogs.push({ id: Date.now(), eventName: input.value.trim(), items: [] });
             input.value = '';
-            renderAll();
-        }
+            renderAuditWorkspace();
+        } else { alert("Please enter an event name"); }
     }
 
-    function handleCSV(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            event.target.result.split(/\r?\n/).forEach(line => {
-                let name = line.split(',')[0].replace(/"/g, '').trim();
-                if(name && name.toLowerCase() !== 'name') {
-                    students.push({name: name, year: currentYearFilter, attendance: {}, payments: {}});
-                }
-            });
-            students.sort((a,b) => a.name.localeCompare(b.name));
-            renderAll();
-        };
-        reader.readAsText(file);
+    function renderAuditWorkspace() {
+        const container = document.getElementById('auditLogContainer'); container.innerHTML = '';
+        auditLogs.forEach(log => {
+            let total = 0;
+            let itemsHTML = log.items.map(i => {
+                let sub = i.qty * i.price; total += sub;
+                return `<div class="audit-grid">
+                    <input type="text" class="audit-input" value="${i.desc}" placeholder="Item" onchange="updateAuditItem(${log.id}, ${i.id}, 'desc', this.value)">
+                    <input type="number" class="audit-input" value="${i.qty}" onchange="updateAuditItem(${log.id}, ${i.id}, 'qty', this.value)">
+                    <input type="number" class="audit-input" value="${i.price}" onchange="updateAuditItem(${log.id}, ${i.id}, 'price', this.value)">
+                    <div style="font-weight:700">₱${sub.toLocaleString()}</div>
+                    <button class="btn-del-item" onclick="deleteAuditItem(${log.id}, ${i.id})">×</button>
+                </div>`;
+            }).join('');
+
+            container.innerHTML += `<div class="audit-card">
+                <div style="display:flex; justify-content:space-between"><h3 ondblclick="renameEvent(${log.id})">${log.eventName}</h3><button class="btn-del-item" style="font-size:0.8rem" onclick="deleteEventLog(${log.id})">Delete Log</button></div>
+                <div class="audit-grid" style="font-weight:700; font-size:0.7rem; color:#64748b"><span>Item Description</span><span>Qty</span><span>Price</span><span>Subtotal</span><span></span></div>
+                ${itemsHTML}
+                <button class="btn-add-item" onclick="addAuditItem(${log.id})">+ Add Item</button>
+                <div class="audit-total-row">Grand Total: ₱${total.toLocaleString()}</div>
+            </div>`;
+        });
+        save();
     }
 
-    function renameCol(idx, type) {
-        let oldName = type === 'att' ? attCols[idx] : finCols[idx];
-        let newName = prompt("Rename to:", oldName);
-        if(newName && newName.trim() !== "" && newName !== oldName) {
-            let finalName = newName.trim();
-            students.forEach(s => {
-                if (type === 'att' && s.attendance?.[oldName]) { s.attendance[finalName] = s.attendance[oldName]; delete s.attendance[oldName]; }
-                else if (type === 'fin' && s.payments?.[oldName] !== undefined) { s.payments[finalName] = s.payments[oldName]; delete s.payments[oldName]; }
-            });
-            if(type === 'att') attCols[idx] = finalName; else finCols[idx] = finalName;
-            renderAll();
-        }
+    function addAuditItem(eventId) { auditLogs.find(l => l.id === eventId).items.push({ id: Date.now(), desc: '', qty: 1, price: 0 }); renderAuditWorkspace(); }
+    function updateAuditItem(eId, iId, f, v) { 
+        let item = auditLogs.find(l => l.id === eId).items.find(i => i.id === iId);
+        item[f] = f === 'desc' ? v : parseFloat(v) || 0; renderAuditWorkspace(); 
     }
+    function deleteAuditItem(eId, iId) { let l = auditLogs.find(log => log.id === eId); l.items = l.items.filter(i => i.id !== iId); renderAuditWorkspace(); }
+    function deleteEventLog(id) { if(confirm("Delete this log?")) { auditLogs = auditLogs.filter(l => l.id !== id); renderAuditWorkspace(); } }
+    function renameEvent(id) { let l = auditLogs.find(log => log.id === id); let n = prompt("Rename event:", l.eventName); if(n) { l.eventName = n; renderAuditWorkspace(); } }
 
-    function addColumn() {
-        const input = document.getElementById('newColTitle');
-        const name = input.value.trim();
-        if(!name) return;
-        if (currentMainPage === 'attendance') { if(!attCols.includes(name)) attCols.push(name); } 
-        else { if(!finCols.includes(name)) finCols.push(name); }
-        input.value = '';
-        renderAll();
-    }
-
-    function deleteCol(idx, type) { if(confirm("Delete column?")) { if(type === 'att') attCols.splice(idx, 1); else finCols.splice(idx, 1); renderAll(); } }
-    function updateVal(idx, col, val, type) { students[idx].attendance[col] = val; renderAll(); }
-    function togglePay(idx, col) { if(!students[idx].payments) students[idx].payments = {}; students[idx].payments[col] = !students[idx].payments[col]; renderAll(); }
+    // SHARED FUNCTIONS
+    function filterYear(y, b) { currentYearFilter = y; document.querySelectorAll('.year-btn').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); renderAll(); }
+    function addStudent() { const i = document.getElementById('newName'); if(i.value.trim()) { students.push({name: i.value.trim(), year: currentYearFilter, attendance: {}, payments: {}}); students.sort((a,b) => a.name.localeCompare(b.name)); i.value = ''; renderAll(); } }
+    function addColumn() { const i = document.getElementById('newColTitle'); const n = i.value.trim(); if(n) { if(currentMainPage === 'attendance') { if(!attCols.includes(n)) attCols.push(n); } else { if(!finCols.includes(n)) finCols.push(n); } i.value = ''; renderAll(); } }
+    function updateVal(idx, col, val, field) { students[idx][field][col] = val; save(); renderAll(); }
+    function togglePay(idx, col) { if(!students[idx].payments) students[idx].payments = {}; students[idx].payments[col] = !students[idx].payments[col]; save(); renderAll(); }
     function deleteStud(idx) { if(confirm("Remove student?")) { students.splice(idx, 1); renderAll(); } }
-    function save() { 
-        localStorage.setItem('ssc_att_cols', JSON.stringify(attCols)); 
-        localStorage.setItem('ssc_fin_cols', JSON.stringify(finCols)); 
-        localStorage.setItem('ssc_studs_v4', JSON.stringify(students)); 
-    }
+    function deleteCol(idx, type) { if(confirm("Delete column?")) { if(type === 'att') attCols.splice(idx, 1); else finCols.splice(idx, 1); renderAll(); } }
+    function renameCol(idx, type) { let list = type === 'att' ? attCols : finCols; let old = list[idx], n = prompt("Rename:", old); if(n) { students.forEach(s => { let key = type==='att'?'attendance':'payments'; if(s[key]&&s[key][old]!==undefined) { s[key][n]=s[key][old]; delete s[key][old]; } }); list[idx]=n; renderAll(); } }
+    function handleCSV(e) { const r = new FileReader(); r.onload = (ev) => { ev.target.result.split(/\r?\n/).forEach(l => { let n = l.split(',')[0].replace(/"/g, '').trim(); if(n && n.toLowerCase() !== 'name') students.push({name:n, year:currentYearFilter, attendance:{}, payments:{}}); }); students.sort((a,b) => a.name.localeCompare(b.name)); renderAll(); }; r.readAsText(e.target.files[0]); }
+    function save() { localStorage.setItem('ssc_att_cols', JSON.stringify(attCols)); localStorage.setItem('ssc_fin_cols', JSON.stringify(finCols)); localStorage.setItem('ssc_audit_logs', JSON.stringify(auditLogs)); localStorage.setItem('ssc_studs_v6', JSON.stringify(students)); }
 
     renderAll();
 </script>
