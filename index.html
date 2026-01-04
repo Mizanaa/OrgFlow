@@ -7,48 +7,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ssc-navy: #1a1c2c;
-            --ssc-gold: #fbb03b;
-            --ssc-red: #d4145a;
-            --ssc-green: #22b573;
-            --bg-light: #f4f7f6;
-            --border-color: #cbd5e1;
+            --ssc-navy: #1a1c2c; --ssc-gold: #fbb03b; --ssc-red: #d4145a;
+            --ssc-green: #22b573; --bg-light: #f4f7f6; --border-color: #cbd5e1;
         }
 
         body { background: var(--bg-light); margin: 0; display: flex; font-family: 'Inter', sans-serif; color: #1e293b; }
         
+        /* Sidebar */
         nav { width: 260px; background: var(--ssc-navy); color: white; height: 100vh; position: fixed; padding: 1.5rem; box-sizing: border-box; z-index: 100; }
         nav h1 { color: var(--ssc-gold); font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 2rem; text-align: center; line-height: 1.4; }
-        .nav-item { 
-            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; 
-            background: transparent; color: #a0aec0; text-align: left; cursor: pointer; font-size: 0.95rem; font-weight: 600;
-        }
+        .nav-item { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; background: transparent; color: #a0aec0; text-align: left; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
         .nav-item.active { background: var(--ssc-gold); color: var(--ssc-navy); }
 
         main { margin-left: 260px; padding: 2rem; width: calc(100% - 260px); box-sizing: border-box; }
-        .page { display: none; }
-        .page.active { display: block; }
+        .page { display: none; } .page.active { display: block; }
+
+        /* Year Category Tabs */
+        .year-tabs { display: flex; gap: 5px; background: white; padding: 5px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+        .year-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; border-radius: 8px; font-weight: 600; color: #64748b; font-size: 0.9rem; }
+        .year-btn.active { background: var(--ssc-navy); color: white; }
 
         .panel { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
         .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         
         input[type="text"] { padding: 12px 15px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; outline: none; }
-        input[type="text"]:focus { border-color: var(--ssc-gold); }
-
-        /* FIXED SEARCH ICON ALIGNMENT */
         .search-wrapper { position: relative; margin-bottom: 1.5rem; max-width: 400px; display: flex; align-items: center; }
         .search-bar { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1.5px solid var(--border-color); outline: none; box-sizing: border-box; font-size: 0.95rem; }
-        .search-bar:focus { border-color: var(--ssc-gold); }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 1.1rem; }
 
-        .table-container { overflow: auto; max-height: 70vh; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
+        /* Table Components */
+        .table-container { overflow: auto; max-height: 60vh; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
         table { width: max-content; border-collapse: separate; border-spacing: 0; min-width: 100%; }
-        
         thead th { position: sticky; top: 0; z-index: 40; background: #f8fafc; padding: 15px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border: 1px solid #edf2f7; min-width: 180px; }
         .name-col { text-align: left; padding-left: 15px; font-weight: 600; width: 250px; min-width: 250px; background: white; position: sticky; left: 0; z-index: 20; border-right: 2px solid #edf2f7; }
         thead th.name-col { z-index: 50; top: 0; }
-
         td { padding: 10px; border: 1px solid #edf2f7; font-size: 0.85rem; text-align: center; }
+
+        /* Summary Footer Style */
+        tfoot td { background: #f1f5f9; font-weight: 700; font-size: 0.8rem; color: var(--ssc-navy); border-top: 2px solid var(--border-color); position: sticky; bottom: 0; z-index: 30; }
 
         .btn-ssc { background: var(--ssc-navy); color: white; padding: 11px 18px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
         .pay-btn { padding: 8px 16px; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; width: 120px; }
@@ -60,7 +56,6 @@
         .status-Complete { background: #dcfce7; color: var(--ssc-green); }
         .status-Excused { background: #e0f2fe; color: #075985; }
         .status-Fulfilled { background: #e0e7ff; color: #3730a3; }
-
         .del-col { position: absolute; top: 2px; right: 2px; cursor: pointer; color: #cbd5e1; font-size: 12px; }
     </style>
 </head>
@@ -68,14 +63,20 @@
 
 <nav>
     <h1>SAN SEBASTIAN COLLEGE<br>RECOLETOS DE CAVITE<br><small style="color:white">BS PSYCHOLOGY</small></h1>
-    <button id="nav-att" class="nav-item active" onclick="showPage('attendance')">Attendance Tracking</button>
-    <button id="nav-fin" class="nav-item" onclick="showPage('finance')">Event Penalties</button>
+    <button id="nav-att" class="nav-item active" onclick="showMainPage('attendance')">Attendance Tracking</button>
+    <button id="nav-fin" class="nav-item" onclick="showMainPage('finance')">Event Penalties</button>
 </nav>
 
 <main>
+    <div class="year-tabs">
+        <button class="year-btn active" onclick="filterYear('1st Year', this)">1st Year</button>
+        <button class="year-btn" onclick="filterYear('2nd Year', this)">2nd Year</button>
+        <button class="year-btn" onclick="filterYear('3rd Year', this)">3rd Year</button>
+        <button class="year-btn" onclick="filterYear('4th Year', this)">4th Year</button>
+    </div>
+
     <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="globalSearch" class="search-bar" placeholder="Start typing a name..." onkeyup="renderAll()">
+        <input type="text" id="globalSearch" class="search-bar" placeholder="Search in this year level..." onkeyup="renderAll()">
     </div>
 
     <div class="panel">
@@ -95,6 +96,7 @@
             <table>
                 <thead id="attHead"></thead>
                 <tbody id="attBody"></tbody>
+                <tfoot id="attFoot"></tfoot>
             </table>
         </div>
     </div>
@@ -104,6 +106,7 @@
             <table>
                 <thead id="finHead"></thead>
                 <tbody id="finBody"></tbody>
+                <tfoot id="finFoot"></tfoot>
             </table>
         </div>
     </div>
@@ -113,10 +116,18 @@
     let attCols = JSON.parse(localStorage.getItem('ssc_att_cols')) || ["Institutional Acts", "Organization Acts"];
     let finCols = JSON.parse(localStorage.getItem('ssc_fin_cols')) || ["Org Fee 2025"];
     let students = JSON.parse(localStorage.getItem('ssc_studs_v4')) || [];
-    let currentPage = 'attendance';
+    let currentMainPage = 'attendance';
+    let currentYearFilter = '1st Year';
 
-    function showPage(id) {
-        currentPage = id;
+    function filterYear(year, btn) {
+        currentYearFilter = year;
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderAll();
+    }
+
+    function showMainPage(id) {
+        currentMainPage = id;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -127,42 +138,74 @@
 
     function renderAll() {
         const query = document.getElementById('globalSearch').value.toLowerCase();
-        
-        // Headers
+        const filteredStudents = students.filter(s => s.year === currentYearFilter && s.name.toLowerCase().includes(query));
+
+        // --- ATTENDANCE RENDER ---
         const attHead = document.getElementById('attHead');
         attHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${attCols.length}">Attendance Status</th><th rowspan="2">Action</th></tr><tr>` + 
             attCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'att')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'att')">✖</span></th>`).join('') + `</tr>`;
         
-        const finHead = document.getElementById('finHead');
-        finHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${finCols.length}">Penalty/Fee Status</th><th rowspan="2">Action</th></tr><tr>` + 
-            finCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'fin')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'fin')">✖</span></th>`).join('') + `</tr>`;
-
         const attBody = document.getElementById('attBody');
-        const finBody = document.getElementById('finBody');
-        attBody.innerHTML = ''; finBody.innerHTML = '';
+        attBody.innerHTML = '';
+        
+        // Tracking counts for summary
+        let attStats = attCols.reduce((acc, col) => { acc[col] = 0; return acc; }, {});
 
-        students.forEach((s, sIdx) => {
-            if(!s.name.toLowerCase().includes(query)) return;
-
+        filteredStudents.forEach((s, sIdx) => {
+            const actualIdx = students.indexOf(s);
             let attRows = `<td class="name-col">${s.name}</td>`;
             attCols.forEach(col => {
                 let val = s.attendance?.[col] || "Incomplete";
-                attRows += `<td><select class="status-${val}" onchange="updateVal(${sIdx}, '${col}', this.value, 'att')">
+                if(val === "Complete" || val === "Fulfilled") attStats[col]++;
+                attRows += `<td><select class="status-${val}" onchange="updateVal(${actualIdx}, '${col}', this.value, 'att')">
                     ${["Incomplete", "Complete", "Excused", "Fulfilled"].map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
                 </select></td>`;
             });
-            attRows += `<td><button onclick="deleteStud(${sIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            attRows += `<td><button onclick="deleteStud(${actualIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
             attBody.innerHTML += `<tr>${attRows}</tr>`;
+        });
 
+        // Attendance Footer
+        const attFoot = document.getElementById('attFoot');
+        attFoot.innerHTML = `<tr><td class="name-col">Total: ${filteredStudents.length} Students</td>` + 
+            attCols.map(col => `<td>${attStats[col]} Cleared</td>`).join('') + `<td></td></tr>`;
+
+        // --- FINANCE RENDER ---
+        const finHead = document.getElementById('finHead');
+        finHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${finCols.length}">Penalty Status</th><th rowspan="2">Action</th></tr><tr>` + 
+            finCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'fin')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'fin')">✖</span></th>`).join('') + `</tr>`;
+
+        const finBody = document.getElementById('finBody');
+        finBody.innerHTML = '';
+        let finStats = finCols.reduce((acc, col) => { acc[col] = 0; return acc; }, {});
+
+        filteredStudents.forEach((s) => {
+            const actualIdx = students.indexOf(s);
             let finRows = `<td class="name-col">${s.name}</td>`;
             finCols.forEach(col => {
                 let isPaid = s.payments?.[col] || false;
-                finRows += `<td><button class="pay-btn ${isPaid?'pay-paid':'pay-unpaid'}" onclick="togglePay(${sIdx}, '${col}')">${isPaid?'PAID':'UNPAID'}</button></td>`;
+                if(isPaid) finStats[col]++;
+                finRows += `<td><button class="pay-btn ${isPaid?'pay-paid':'pay-unpaid'}" onclick="togglePay(${actualIdx}, '${col}')">${isPaid?'PAID':'UNPAID'}</button></td>`;
             });
-            finRows += `<td><button onclick="deleteStud(${sIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            finRows += `<td><button onclick="deleteStud(${actualIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
             finBody.innerHTML += `<tr>${finRows}</tr>`;
         });
+
+        const finFoot = document.getElementById('finFoot');
+        finFoot.innerHTML = `<tr><td class="name-col">Total: ${filteredStudents.length} Students</td>` + 
+            finCols.map(col => `<td>${finStats[col]} Paid</td>`).join('') + `<td></td></tr>`;
+
         save();
+    }
+
+    function addStudent() {
+        const input = document.getElementById('newName');
+        if(input.value.trim()) {
+            students.push({name: input.value.trim(), year: currentYearFilter, attendance: {}, payments: {}});
+            students.sort((a,b) => a.name.localeCompare(b.name));
+            input.value = '';
+            renderAll();
+        }
     }
 
     function handleCSV(e) {
@@ -170,11 +213,10 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(event) {
-            const lines = event.target.result.split(/\r?\n/);
-            lines.forEach(line => {
+            event.target.result.split(/\r?\n/).forEach(line => {
                 let name = line.split(',')[0].replace(/"/g, '').trim();
                 if(name && name.toLowerCase() !== 'name') {
-                    students.push({name: name, attendance: {}, payments: {}});
+                    students.push({name: name, year: currentYearFilter, attendance: {}, payments: {}});
                 }
             });
             students.sort((a,b) => a.name.localeCompare(b.name));
@@ -183,38 +225,39 @@
         reader.readAsText(file);
     }
 
+    function renameCol(idx, type) {
+        let oldName = type === 'att' ? attCols[idx] : finCols[idx];
+        let newName = prompt("Rename to:", oldName);
+        if(newName && newName.trim() !== "" && newName !== oldName) {
+            let finalName = newName.trim();
+            students.forEach(s => {
+                if (type === 'att' && s.attendance?.[oldName]) { s.attendance[finalName] = s.attendance[oldName]; delete s.attendance[oldName]; }
+                else if (type === 'fin' && s.payments?.[oldName] !== undefined) { s.payments[finalName] = s.payments[oldName]; delete s.payments[oldName]; }
+            });
+            if(type === 'att') attCols[idx] = finalName; else finCols[idx] = finalName;
+            renderAll();
+        }
+    }
+
     function addColumn() {
         const input = document.getElementById('newColTitle');
         const name = input.value.trim();
         if(!name) return;
-        if (currentPage === 'attendance') { if(!attCols.includes(name)) attCols.push(name); } 
+        if (currentMainPage === 'attendance') { if(!attCols.includes(name)) attCols.push(name); } 
         else { if(!finCols.includes(name)) finCols.push(name); }
         input.value = '';
         renderAll();
     }
 
     function deleteCol(idx, type) { if(confirm("Delete column?")) { if(type === 'att') attCols.splice(idx, 1); else finCols.splice(idx, 1); renderAll(); } }
-
-    function renameCol(idx, type) {
-        let oldN = type === 'att' ? attCols[idx] : finCols[idx];
-        let newN = prompt("Rename to:", oldN);
-        if(newN && newN.trim() !== "") { if(type === 'att') attCols[idx] = newN.trim(); else finCols[idx] = newN.trim(); renderAll(); }
-    }
-
-    function addStudent() {
-        const input = document.getElementById('newName');
-        if(input.value.trim()) {
-            students.push({name: input.value.trim(), attendance: {}, payments: {}});
-            students.sort((a,b) => a.name.localeCompare(b.name));
-            input.value = '';
-            renderAll();
-        }
-    }
-
-    function updateVal(sIdx, col, val, type) { students[sIdx].attendance[col] = val; save(); renderAll(); }
-    function togglePay(sIdx, col) { if(!students[sIdx].payments) students[sIdx].payments = {}; students[sIdx].payments[col] = !students[sIdx].payments[col]; save(); renderAll(); }
+    function updateVal(idx, col, val, type) { students[idx].attendance[col] = val; renderAll(); }
+    function togglePay(idx, col) { if(!students[idx].payments) students[idx].payments = {}; students[idx].payments[col] = !students[idx].payments[col]; renderAll(); }
     function deleteStud(idx) { if(confirm("Remove student?")) { students.splice(idx, 1); renderAll(); } }
-    function save() { localStorage.setItem('ssc_att_cols', JSON.stringify(attCols)); localStorage.setItem('ssc_fin_cols', JSON.stringify(finCols)); localStorage.setItem('ssc_studs_v4', JSON.stringify(students)); }
+    function save() { 
+        localStorage.setItem('ssc_att_cols', JSON.stringify(attCols)); 
+        localStorage.setItem('ssc_fin_cols', JSON.stringify(finCols)); 
+        localStorage.setItem('ssc_studs_v4', JSON.stringify(students)); 
+    }
 
     renderAll();
 </script>
