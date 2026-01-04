@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrgFlow | SSC-R Cavite Psychology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ssc-navy: #1a1c2c;
+            --ssc-gold: #fbb03b;
+            --ssc-red: #d4145a;
+            --ssc-green: #22b573;
+            --bg-light: #f4f7f6;
+            --border-color: #cbd5e1;
+        }
+
+        body { background: var(--bg-light); margin: 0; display: flex; font-family: 'Inter', sans-serif; color: #1e293b; }
+        
+        nav { width: 260px; background: var(--ssc-navy); color: white; height: 100vh; position: fixed; padding: 1.5rem; box-sizing: border-box; z-index: 100; }
+        nav h1 { color: var(--ssc-gold); font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 2rem; text-align: center; line-height: 1.4; }
+        .nav-item { 
+            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; 
+            background: transparent; color: #a0aec0; text-align: left; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+        }
+        .nav-item.active { background: var(--ssc-gold); color: var(--ssc-navy); }
+
+        main { margin-left: 260px; padding: 2rem; width: calc(100% - 260px); box-sizing: border-box; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .panel { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        
+        input[type="text"] { padding: 12px 15px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.9rem; outline: none; }
+        input[type="text"]:focus { border-color: var(--ssc-gold); }
+
+        /* FIXED SEARCH ICON ALIGNMENT */
+        .search-wrapper { position: relative; margin-bottom: 1.5rem; max-width: 400px; display: flex; align-items: center; }
+        .search-bar { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1.5px solid var(--border-color); outline: none; box-sizing: border-box; font-size: 0.95rem; }
+        .search-bar:focus { border-color: var(--ssc-gold); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 1.1rem; }
+
+        .table-container { overflow: auto; max-height: 70vh; border-radius: 12px; background: white; border: 1px solid #e2e8f0; }
+        table { width: max-content; border-collapse: separate; border-spacing: 0; min-width: 100%; }
+        
+        thead th { position: sticky; top: 0; z-index: 40; background: #f8fafc; padding: 15px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border: 1px solid #edf2f7; min-width: 180px; }
+        .name-col { text-align: left; padding-left: 15px; font-weight: 600; width: 250px; min-width: 250px; background: white; position: sticky; left: 0; z-index: 20; border-right: 2px solid #edf2f7; }
+        thead th.name-col { z-index: 50; top: 0; }
+
+        td { padding: 10px; border: 1px solid #edf2f7; font-size: 0.85rem; text-align: center; }
+
+        .btn-ssc { background: var(--ssc-navy); color: white; padding: 11px 18px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+        .pay-btn { padding: 8px 16px; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; width: 120px; }
+        .pay-paid { background: var(--ssc-green); color: white; }
+        .pay-unpaid { background: var(--ssc-red); color: white; }
+        
+        select { padding: 8px; border-radius: 6px; border: none; font-weight: 700; width: 100%; cursor: pointer; text-align: center; appearance: none; }
+        .status-Incomplete { background: #fee2e2; color: var(--ssc-red); }
+        .status-Complete { background: #dcfce7; color: var(--ssc-green); }
+        .status-Excused { background: #e0f2fe; color: #075985; }
+        .status-Fulfilled { background: #e0e7ff; color: #3730a3; }
+
+        .del-col { position: absolute; top: 2px; right: 2px; cursor: pointer; color: #cbd5e1; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>SAN SEBASTIAN COLLEGE<br>RECOLETOS DE CAVITE<br><small style="color:white">BS PSYCHOLOGY</small></h1>
+    <button id="nav-att" class="nav-item active" onclick="showPage('attendance')">Attendance Tracking</button>
+    <button id="nav-fin" class="nav-item" onclick="showPage('finance')">Event Penalties</button>
+</nav>
+
+<main>
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearch" class="search-bar" placeholder="Start typing a name..." onkeyup="renderAll()">
+    </div>
+
+    <div class="panel">
+        <div class="controls">
+            <input type="text" id="newName" placeholder="Student Name">
+            <button class="btn-ssc" onclick="addStudent()">Add Student</button>
+            <div style="border-left: 1px solid #ddd; height: 30px; margin: 0 5px;"></div>
+            <input type="text" id="newColTitle" placeholder="Event Name">
+            <button id="addColBtn" class="btn-ssc" style="background: var(--ssc-gold); color: var(--ssc-navy);" onclick="addColumn()">Add Attendance Column</button>
+            <button class="btn-ssc" style="background:#6366f1" onclick="document.getElementById('csvIn').click()">📁 Import CSV</button>
+            <input type="file" id="csvIn" style="display:none" accept=".csv" onchange="handleCSV(event)">
+        </div>
+    </div>
+
+    <div id="attendance" class="page active">
+        <div class="table-container">
+            <table>
+                <thead id="attHead"></thead>
+                <tbody id="attBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="finance" class="page">
+        <div class="table-container">
+            <table>
+                <thead id="finHead"></thead>
+                <tbody id="finBody"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    let attCols = JSON.parse(localStorage.getItem('ssc_att_cols')) || ["Institutional Acts", "Organization Acts"];
+    let finCols = JSON.parse(localStorage.getItem('ssc_fin_cols')) || ["Org Fee 2025"];
+    let students = JSON.parse(localStorage.getItem('ssc_studs_v4')) || [];
+    let currentPage = 'attendance';
+
+    function showPage(id) {
+        currentPage = id;
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(id === 'attendance' ? 'nav-att' : 'nav-fin').classList.add('active');
+        document.getElementById('addColBtn').innerText = id === 'attendance' ? 'Add Attendance Column' : 'Add Penalty Column';
+        renderAll();
+    }
+
+    function renderAll() {
+        const query = document.getElementById('globalSearch').value.toLowerCase();
+        
+        // Headers
+        const attHead = document.getElementById('attHead');
+        attHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${attCols.length}">Attendance Status</th><th rowspan="2">Action</th></tr><tr>` + 
+            attCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'att')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'att')">✖</span></th>`).join('') + `</tr>`;
+        
+        const finHead = document.getElementById('finHead');
+        finHead.innerHTML = `<tr><th rowspan="2" class="name-col">Student Name</th><th colspan="${finCols.length}">Penalty/Fee Status</th><th rowspan="2">Action</th></tr><tr>` + 
+            finCols.map((c, i) => `<th ondblclick="renameCol(${i}, 'fin')">${c}<span class="del-col" onclick="event.stopPropagation(); deleteCol(${i}, 'fin')">✖</span></th>`).join('') + `</tr>`;
+
+        const attBody = document.getElementById('attBody');
+        const finBody = document.getElementById('finBody');
+        attBody.innerHTML = ''; finBody.innerHTML = '';
+
+        students.forEach((s, sIdx) => {
+            if(!s.name.toLowerCase().includes(query)) return;
+
+            let attRows = `<td class="name-col">${s.name}</td>`;
+            attCols.forEach(col => {
+                let val = s.attendance?.[col] || "Incomplete";
+                attRows += `<td><select class="status-${val}" onchange="updateVal(${sIdx}, '${col}', this.value, 'att')">
+                    ${["Incomplete", "Complete", "Excused", "Fulfilled"].map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
+                </select></td>`;
+            });
+            attRows += `<td><button onclick="deleteStud(${sIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            attBody.innerHTML += `<tr>${attRows}</tr>`;
+
+            let finRows = `<td class="name-col">${s.name}</td>`;
+            finCols.forEach(col => {
+                let isPaid = s.payments?.[col] || false;
+                finRows += `<td><button class="pay-btn ${isPaid?'pay-paid':'pay-unpaid'}" onclick="togglePay(${sIdx}, '${col}')">${isPaid?'PAID':'UNPAID'}</button></td>`;
+            });
+            finRows += `<td><button onclick="deleteStud(${sIdx})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td>`;
+            finBody.innerHTML += `<tr>${finRows}</tr>`;
+        });
+        save();
+    }
+
+    function handleCSV(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const lines = event.target.result.split(/\r?\n/);
+            lines.forEach(line => {
+                let name = line.split(',')[0].replace(/"/g, '').trim();
+                if(name && name.toLowerCase() !== 'name') {
+                    students.push({name: name, attendance: {}, payments: {}});
+                }
+            });
+            students.sort((a,b) => a.name.localeCompare(b.name));
+            renderAll();
+        };
+        reader.readAsText(file);
+    }
+
+    function addColumn() {
+        const input = document.getElementById('newColTitle');
+        const name = input.value.trim();
+        if(!name) return;
+        if (currentPage === 'attendance') { if(!attCols.includes(name)) attCols.push(name); } 
+        else { if(!finCols.includes(name)) finCols.push(name); }
+        input.value = '';
+        renderAll();
+    }
+
+    function deleteCol(idx, type) { if(confirm("Delete column?")) { if(type === 'att') attCols.splice(idx, 1); else finCols.splice(idx, 1); renderAll(); } }
+
+    function renameCol(idx, type) {
+        let oldN = type === 'att' ? attCols[idx] : finCols[idx];
+        let newN = prompt("Rename to:", oldN);
+        if(newN && newN.trim() !== "") { if(type === 'att') attCols[idx] = newN.trim(); else finCols[idx] = newN.trim(); renderAll(); }
+    }
+
+    function addStudent() {
+        const input = document.getElementById('newName');
+        if(input.value.trim()) {
+            students.push({name: input.value.trim(), attendance: {}, payments: {}});
+            students.sort((a,b) => a.name.localeCompare(b.name));
+            input.value = '';
+            renderAll();
+        }
+    }
+
+    function updateVal(sIdx, col, val, type) { students[sIdx].attendance[col] = val; save(); renderAll(); }
+    function togglePay(sIdx, col) { if(!students[sIdx].payments) students[sIdx].payments = {}; students[sIdx].payments[col] = !students[sIdx].payments[col]; save(); renderAll(); }
+    function deleteStud(idx) { if(confirm("Remove student?")) { students.splice(idx, 1); renderAll(); } }
+    function save() { localStorage.setItem('ssc_att_cols', JSON.stringify(attCols)); localStorage.setItem('ssc_fin_cols', JSON.stringify(finCols)); localStorage.setItem('ssc_studs_v4', JSON.stringify(students)); }
+
+    renderAll();
+</script>
+</body>
+</html>
